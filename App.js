@@ -224,6 +224,8 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
 
 
 // sei arrivato qui //forse inutile
+// SECURITY BUG NO JWT FINDE A SOLUTION 
+// missing  passport.authenticate('jwt', { session: false }) in the route
 app.get(`/getdocument/:idFile`, (req,res)=>{
   //start from here
   console.log(req.query)
