@@ -113,8 +113,18 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 
 })
 
+//check if he has the rights to access this page
+//the Capital letter is important
+app.get('/userFolder/:Uid/AddFiles', passport.authenticate('jwt', { session: false }),(req,res)=>{
+  
+  res.status(200)
+
+})
+
+
 //add file to db and filsystem
-app.post('/addFile',passport.authenticate('jwt', { session: false }),(req,res)=>{
+//lower case latter at the beginning is important
+app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
   console.log(req.body)
   const folderName = `${req.body.folder}`
@@ -130,39 +140,52 @@ app.post('/addFile',passport.authenticate('jwt', { session: false }),(req,res)=>
 
   // creating the folder
   const DBFolderPath = `/public/files/${folderName}`
-  let TableID 
-  connection.query(`INSERT INTO folder (name, path,	assigned_worker_id) VALUES (
-      '${folderName}',
-      '${DBFolderPath}',
-      '${req.body.idUser}')`, 
-    (err, result, fields) =>{
-      if (err) throw err;
-      TableID = result.insertId
-   
-    })
 
-    //aggiungo il file nel db non funziona
-  if(req.files){
-    for (const file in req.files) {
-      console.log(`${file} : ${req.files[file].name}`)
-      let path=`./public/files/${folderName}/${req.files[file].name}`
-      req.files[file].mv(path)
 
-    connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
-        '${req.files[file].name}',
-        '${path}',
-        '${TableID}')`, 
-      (err, result, fields) =>{
-        if (err) throw err;
-        res.json({
-          result
-        })
-      })
+  async function insertFolderAndFile() {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        connection.query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
+          '${folderName}',
+          '${DBFolderPath}',
+          '${req.body.idUser}')`, 
+          (err, result, fields) => {
+            if (err) reject(err);
+            resolve(result);
+          });
+      });
+      
+      const TableID = result.insertId;
 
-  }
+      if(req.files){
+        for (const file in req.files) {
+          console.log(`${file} : ${req.files[file].name}`)
+          let path=`./public/files/${folderName}/${req.files[file].name}`
+          req.files[file].mv(path)
+    
+        connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
+            '${req.files[file].name}',
+            '${path}',
+            '${TableID}')`, 
+          (err, result, fields) =>{
+            if (err) throw err;
+            res.json({
+              result
+            })
+          })
+    
+      }
+    
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
 
   }
   
+  insertFolderAndFile();
+
   })
 
 
