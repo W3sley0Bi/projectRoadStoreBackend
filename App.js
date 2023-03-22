@@ -115,16 +115,14 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 
 //check if he has the rights to access this page
 //the Capital letter is important
-app.get('/userFolder/:Uid/AddFiles', passport.authenticate('jwt', { session: false }),(req,res)=>{
-  
-  res.status(200)
-
+app.get('/:Uid/addFilesAccess', passport.authenticate('jwt', { session: false }),(req,res)=>{
+  res.status(200).json({})
 })
 
 
 //add file to db and filsystem
 //lower case latter at the beginning is important
-app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
+app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
   console.log(req.body)
   const folderName = `${req.body.folder}`
@@ -139,7 +137,8 @@ app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: fal
   //mving files into the folders
 
   // creating the folder
-  const DBFolderPath = `/public/files/${folderName}`
+  const DBFolderPath = `./public/files/${folderName}`
+
 
 
   async function insertFolderAndFile() {
@@ -154,7 +153,7 @@ app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: fal
             resolve(result);
           });
       });
-      
+
       const TableID = result.insertId;
 
       if(req.files){
@@ -169,11 +168,11 @@ app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: fal
             '${TableID}')`, 
           (err, result, fields) =>{
             if (err) throw err;
-            res.json({
+            res.status(200).json({
               result
             })
           })
-    
+  
       }
     
       }
@@ -183,7 +182,7 @@ app.post('/userFolder/:Uid/addFiles',passport.authenticate('jwt', { session: fal
     }
 
   }
-  
+
   insertFolderAndFile();
 
   })
@@ -206,124 +205,46 @@ app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(re
 //per i file nella cartella specifica
 app.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
-  connection.query(`SELECT name, path, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}'  AND idFolder = '${req.params.FolderContent}'`, 
+  connection.query(`SELECT f.name as folder_name, f.path as folder_path, f.assigned_worker_id, 
+  fi.idFile, fi.name as file_name, fi.path as file_path, fi.folder_fk
+FROM folder f
+LEFT JOIN file fi ON f.idFolder = fi.folder_fk
+WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.FolderContent}'
+`, 
  (err, result, fields) =>{
   if (err) throw err;
 
+  //check sometimes this line gives you error
 
-  const directoryPath = path.join(__dirname, `${result[0].path}`);
+ res.json(result)
 
-  fs.readdir(directoryPath, (err, files) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    
-    // Filter out any hidden files or directories
-    files = files.filter((file) => !file.startsWith('.'));
-
-    // Create an array of objects representing each file or directory
-  console.log(files)
-  console.log(result[0].path)
-  res.json({fileNames: files})
-
-
-      
-  })
-  //aggiungi __directory
-
-  // for (let i = 0; i < result.length; i++) {
-  //   const filePath = result[i].path;
-  //   const fileName = result[i].name;
-  //   console.log(result[i])
-
-  //   res.sendFile(filePath, { root: __dirname }, (err) => {
-  //     if (err) {
-  //       console.error(err);
-  //       res.status(err.status).end();
-  //     } else {
-  //       console.log(`Sent file ${fileName} to client.`);
-  //     }
-  //   });
-  // }
-
+  });
 });
 
 
-//   res.writeHead(200, {
-//     'Content-Type': '*/*',
-//     'Content-Length': stat.size,
-//     'Content-Disposition': `attachment; filename=${result.name}`
-// });
 
-//   res.json({
-//     result
-//   })
-
- 
-})
-
-/// sei arrivato qui
-app.get(`/userFolder/:Uid/:FolderContent/id`, passport.authenticate('jwt', { session: false }),(req,res)=>{
+// sei arrivato qui //forse inutile
+app.get(`/getdocument/:idFile`, (req,res)=>{
   //start from here
-  connection.query(`SELECT name, path, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}'  AND idFolder = '${req.params.FolderContent}'`, 
- (err, result, fields) =>{
-  if (err) throw err;
+  console.log(req.query)
+  console.log(__dirname)
+  console.log(req.query.filePath)
+const filePath = path.join(__dirname, `${req.query.filePath}`)
+res.sendFile(filePath)
 
 
-  const directoryPath = path.join(__dirname, `${result[0].path}`);
-
-  fs.readdir(directoryPath, (err, files) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    
-    // Filter out any hidden files or directories
-    files = files.filter((file) => !file.startsWith('.'));
-
-    // Create an array of objects representing each file or directory
-  console.log(files)
-  console.log(result[0].path)
-  res.json({fileNames: files})
-
-
-      
-  })
-  //aggiungi __directory
-
-  // for (let i = 0; i < result.length; i++) {
-  //   const filePath = result[i].path;
-  //   const fileName = result[i].name;
-  //   console.log(result[i])
-
-  //   res.sendFile(filePath, { root: __dirname }, (err) => {
-  //     if (err) {
-  //       console.error(err);
-  //       res.status(err.status).end();
-  //     } else {
-  //       console.log(`Sent file ${fileName} to client.`);
-  //     }
-  //   });
-  // }
+//   connection.query(`SELECT name, path, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}'  AND idFolder = '${req.params.FolderContent}'`, 
+//  (err, result, fields) =>{
+//   if (err) throw err;
 
 });
 
 
-//   res.writeHead(200, {
-//     'Content-Type': '*/*',
-//     'Content-Length': stat.size,
-//     'Content-Disposition': `attachment; filename=${result.name}`
-// });
+  
 
-//   res.json({
-//     result
-//   })
 
- 
-})
+
+
 
 
 
