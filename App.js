@@ -253,20 +253,10 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
 
 
 
-// sei arrivato qui //forse inutile
-// SECURITY BUG NO JWT FINDE A SOLUTION 
-// missing  passport.authenticate('jwt', { session: false }) in the route
-app.get(`/getdocument/:idFile`, (req,res)=>{
-  //start from here
-  console.log(req.query)
-  console.log(__dirname)
-  console.log(req.query.filePath)
+app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
+ 
 const filePath = path.join(__dirname, `${req.query.filePath}`)
 res.sendFile(filePath)
-
-//   connection.query(`SELECT name, path, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}'  AND idFolder = '${req.params.FolderContent}'`, 
-//  (err, result, fields) =>{
-//   if (err) throw err;
 
 });
 
