@@ -44,7 +44,6 @@ app.use(upload())
 
 
 
-
 //adding users into the DB
 // aggiiungre il token perché devi avere accesso admin
 //rewrite the registration api, because only the admin can add new users
@@ -74,10 +73,12 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
    return res.sendStatus(401)
 }
 
+
 //initializing the paylod for the jwt signature
   const payload = {
-    Uid: result[0].Uid,
-    Username: result[0].Username,
+    Uid: result[0].idUser,
+    Username: result[0].name,
+    Role: result[0].role_fk,
   }
 
   // this secret key must be equal to the key in the passport.js module
@@ -234,7 +235,6 @@ app.get(`/getdocument/:idFile`, (req,res)=>{
 const filePath = path.join(__dirname, `${req.query.filePath}`)
 res.sendFile(filePath)
 
-
 //   connection.query(`SELECT name, path, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}'  AND idFolder = '${req.params.FolderContent}'`, 
 //  (err, result, fields) =>{
 //   if (err) throw err;
@@ -302,23 +302,24 @@ res.sendFile(filePath)
 
 
 
-// // add this token signature function in the registration
-// // function tokenSignature(result){
-// //   const payload = {
-// //     Uid: result[0].Uid,
-// //     Username: result[0].Username,
-// //    //Password: result[0].Password,
-// //   }
-// //   const secretOrKey = 'secret_key' 
-// //   //creating a signature for the token
-// //   const token = jwt.sign(payload, secretOrKey, { expiresIn: "1d" })
-// //    res.status(200).send({
-// //     success: true,
-// //     message: 'logged',
-// //     token: 'Bearer ' + token
-// //   });
+// add this token signature function in the registration
+// not Working at the registration
+// function tokenSignature(result){
+//   const payload = {
+//     Uid: result[0].Uid,
+//     Username: result[0].Username,
+//    //Password: result[0].Password,
+//   }
+//   const secretOrKey = 'secret_key' 
+//   //creating a signature for the token
+//   const token = jwt.sign(payload, secretOrKey, { expiresIn: "1d" })
+//    res.status(200).send({
+//     success: true,
+//     message: 'logged',
+//     token: 'Bearer ' + token
+//   });
 
-// // }
+// }
 
 app.listen(port,() =>{
   console.log(`listerin on ${port} `);
