@@ -44,6 +44,7 @@ app.use(upload())
 
 
 
+
 //adding users into the DB
 // aggiiungre il token perché devi avere accesso admin
 //rewrite the registration api, because only the admin can add new users
@@ -86,11 +87,25 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 
   //creating a signature for the token and passing the payload, the secretkey and some options
   const token = jwt.sign(payload, secretOrKey, { expiresIn: "20d" })
-   res.status(200).send({
-    success: true,
-    message: 'logged',
-    token: 'Bearer ' + token
-  });
+
+  let resToken = 'Bearer ' + token
+
+  connection.query(`UPDATE user SET access_token = '${resToken}' WHERE name='${req.body.username}'`, 
+    (err, result, fields) => {
+      
+      if (err) throw err ;
+
+      res.status(200).send({
+        success: true,
+        message: 'logged',
+        token: resToken
+      });
+    
+      
+    });
+
+
+
 
 })
 
@@ -100,6 +115,12 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 //before sending the output requested as result
 app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>{
   //remember to change the query and not retrive everything but only the date that we want in the output
+  connection.query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
+  (err, result, fields) =>{
+    if (err) throw err;
+    
+    if(result[0].role_fk == 1){
+      
   try{
   connection.query(`SELECT idUser, name, surname FROM user`, 
 (err, result, fields) =>{
@@ -111,6 +132,14 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 }catch(err){
   console.log(err)
 }
+
+
+}else{
+  res.status(401).json("Access Denied")
+}
+
+
+})
 
 })
 
