@@ -337,7 +337,6 @@ res.sendFile(filePath)
 //     message: 'logged',
 //     token: 'Bearer ' + token
 //   });
-
 // }
 
 app.listen(port,() =>{
