@@ -44,7 +44,6 @@ app.use(upload())
 
 
 
-
 //adding users into the DB
 // aggiiungre il token perché devi avere accesso admin
 //rewrite the registration api, because only the admin can add new users
@@ -63,7 +62,6 @@ res.send(result)
 app.post('/login', (req, res)=>{
 query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
 (err, result, fields) =>{
-
   if (err) throw err;
   //user not found
   if(result.length == 0){
@@ -98,7 +96,8 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
       res.status(200).send({
         success: true,
         message: 'logged',
-        token: resToken
+        token: resToken,
+        payload: payload
       });
     
       
@@ -118,7 +117,7 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
   query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
   (err, result, fields) =>{
     if (err) throw err;
-    
+
     if(result[0].role_fk == 1){
       
   try{
