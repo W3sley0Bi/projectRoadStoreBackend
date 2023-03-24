@@ -2,7 +2,7 @@
 const mysql = require('mysql2');
 const path = require('path');
 const config = require('../../config.js');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') })
+require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 async function query(sql, params) {
 

@@ -3,10 +3,9 @@
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const passport = require('passport');
-const { connection } = require('./DBConnection');
+const {query} = require('./DBConnection')
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') })
-
+require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -14,7 +13,7 @@ opts = {
 }
 
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    connection.query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}' `, function(err, user) {
+    query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}' `, function(err, user) {
         if (err) {
             return done(err, false);
         }
