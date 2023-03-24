@@ -79,6 +79,13 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
     Username: result[0].name,
     Role: result[0].role_fk,
   }
+  const userData = {
+    Uid: result[0].idUser,
+    Username: result[0].name,
+    Role: result[0].role_fk,
+    Email: result[0].email
+  }
+  // data that i need for the user
 
   // this secret key must be equal to the key in the passport.js module
   const secretOrKey = process.env.SECRETJWT
@@ -97,7 +104,7 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
         success: true,
         message: 'logged',
         token: resToken,
-        payload: payload
+        userData: userData
       });
     
       
