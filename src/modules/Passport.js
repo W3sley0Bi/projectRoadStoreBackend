@@ -9,7 +9,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey : process.env.SECRETJWT,
+    secretOrKey : `${process.env.SECRETJWT}`,
 }
 
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {

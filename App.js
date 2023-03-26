@@ -62,6 +62,7 @@ res.send(result)
 app.post('/login', (req, res)=>{
 query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
 (err, result, fields) =>{
+  console.log(req.body)
   if (err) throw err;
   //user not found
   if(result.length == 0){
@@ -88,7 +89,7 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
   // data that i need for the user
 
   // this secret key must be equal to the key in the passport.js module
-  const secretOrKey = process.env.SECRETJWT
+  const secretOrKey = `${process.env.SECRETJWT}`
 
   //creating a signature for the token and passing the payload, the secretkey and some options
   const token = jwt.sign(payload, secretOrKey, { expiresIn: "20d" })
@@ -126,7 +127,7 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
     if (err) throw err;
 
     if(result[0].role_fk == 1){
-      
+
   try{
   query(`SELECT idUser, name, surname FROM user`, 
 (err, result, fields) =>{
@@ -141,7 +142,7 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 
 
 }else{
-  res.status(401).json("Access Denied")
+  res.status(403).json("Access Denied")
 }
 
 
