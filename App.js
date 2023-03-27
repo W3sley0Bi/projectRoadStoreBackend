@@ -29,7 +29,7 @@ const passport = require('passport')
 require('./src/modules/Passport')
 
 //set the cors oringin for the working route 
-app.use(cors({origin: `${process.env.ORIGIN_DEP}`})); 
+app.use(cors({origin: '*'})); 
 // setupping the express  & passport stuff
 app.use(express.json()); 
 app.use(express.urlencoded({extended: false}));
