@@ -43,6 +43,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(upload())
 
 
+app.get('/',(req,res) =>{
+  res.send("hello")
+})
 
 //adding users into the DB
 // aggiiungre il token perché devi avere accesso admin
