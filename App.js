@@ -1,7 +1,7 @@
 const app = require('./src/modules/Express')
 const express = require('express')
 const {query} = require('./src/modules/DBConnection')
-const port = process.env.PORT || 3001
+const port = process.env.PORT
 
 const mv = require('mv');
 const fs = require('fs')
