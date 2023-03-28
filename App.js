@@ -266,7 +266,7 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
 
 app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
  
-const filePath = path.join(__dirname, `${req.connection.query.filePath}`)
+const filePath = path.join(__dirname, `${req.query.filePath}`)
 res.sendFile(filePath)
 
 });
@@ -351,6 +351,6 @@ res.sendFile(filePath)
 // }
 
 app.listen(port,() =>{
-  console.log(`listerin on ${port} `);
+  console.log(`listenig on ${port} `);
 })
 
