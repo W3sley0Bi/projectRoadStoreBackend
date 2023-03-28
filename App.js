@@ -62,7 +62,8 @@ res.send(result)
 
 // making the login request
 app.post('/login', (req, res)=>{
-  
+
+
 connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
 (err, result, fields) =>{
   console.log(req.body)
@@ -125,7 +126,9 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 //before sending the output requested as result
 app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>{
   //remember to change the connection.query and not retrive everything but only the date that we want in the output
-  connection.query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
+// error with
+
+  connection.query(`SELECT role_fk FROM user WHERE idUser = '${req.user[0].idUser}'`, 
   (err, result, fields) =>{
     if (err) throw err;
 
