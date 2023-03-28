@@ -1,6 +1,6 @@
 const app = require('./src/modules/Express')
 const express = require('express')
-const {query} = require('./src/modules/DBConnection')
+const {connection} = require('./src/modules/DBConnection')
 const port = process.env.PORT || 3001
 
 const mv = require('mv');
@@ -51,7 +51,7 @@ app.get('/',(req,res) =>{
 // aggiiungre il token perché devi avere accesso admin
 //rewrite the registration api, because only the admin can add new users
 app.post('/registration',(req,res) =>{
-query(`INSERT INTO user (name, password) VALUES (
+connection.query(`INSERT INTO user (name, password) VALUES (
     '${req.body.username}',
     '${hashSync(req.body.password,10)}')`, function(err, result, fields) {
   if (err) throw err;
@@ -63,7 +63,7 @@ res.send(result)
 
 // making the login request
 app.post('/login', (req, res)=>{
-query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
+connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
 (err, result, fields) =>{
   console.log(req.body)
   if (err) throw err;
@@ -99,7 +99,7 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 
   let resToken = 'Bearer ' + token
 
-  query(`UPDATE user SET access_token = '${resToken}' WHERE name='${req.body.username}'`, 
+  connection.query(`UPDATE user SET access_token = '${resToken}' WHERE name='${req.body.username}'`, 
     (err, result, fields) => {
       
       if (err) throw err ;
@@ -124,15 +124,15 @@ query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 //the second arg is using the passport.js strategiy or the validation of the token
 //before sending the output requested as result
 app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>{
-  //remember to change the query and not retrive everything but only the date that we want in the output
-  query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
+  //remember to change the connection.query and not retrive everything but only the date that we want in the output
+  connection.query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
   (err, result, fields) =>{
     if (err) throw err;
 
     if(result[0].role_fk == 1){
 
   try{
-  query(`SELECT idUser, name, surname FROM user`, 
+  connection.query(`SELECT idUser, name, surname FROM user`, 
 (err, result, fields) =>{
   if (err) throw err;
   res.json({
@@ -184,7 +184,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
   async function insertFolderAndFile() {
     try {
       const result = await new Promise((resolve, reject) => {
-        query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
+        connection.query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
           '${folderName}',
           '${DBFolderPath}',
           '${req.body.idUser}')`, 
@@ -202,7 +202,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
           let path=`./public/files/${folderName}/${req.files[file].name}`
           req.files[file].mv(path)
     
-        query(`INSERT INTO file (name, path,	folder_fk) VALUES (
+        connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
             '${req.files[file].name}',
             '${path}',
             '${TableID}')`, 
@@ -231,7 +231,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
 // getting the data of the single event
 app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
-  query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
+  connection.query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
 (err, result, fields) =>{
   if (err) throw err;
   res.json({
@@ -245,7 +245,7 @@ app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(re
 //per i file nella cartella specifica
 app.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
-  query(`SELECT f.name as folder_name, f.path as folder_path, f.assigned_worker_id, 
+  connection.query(`SELECT f.name as folder_name, f.path as folder_path, f.assigned_worker_id, 
   fi.idFile, fi.name as file_name, fi.path as file_path, fi.folder_fk
 FROM folder f
 LEFT JOIN file fi ON f.idFolder = fi.folder_fk
@@ -265,7 +265,7 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
 
 app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
  
-const filePath = path.join(__dirname, `${req.query.filePath}`)
+const filePath = path.join(__dirname, `${req.connection.query.filePath}`)
 res.sendFile(filePath)
 
 });
@@ -287,7 +287,7 @@ res.sendFile(filePath)
 
 // //deleting the single event
 // app.delete(`/singleEvent/:Eid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
-//   query(`DELETE FROM events WHERE Eid = '${req.params.Eid}' `, 
+//   connection.query(`DELETE FROM events WHERE Eid = '${req.params.Eid}' `, 
 //   (err, result, fields) =>{
 //     if (err) throw err;
 //     res.json({
@@ -302,7 +302,7 @@ res.sendFile(filePath)
 // app.put('/modifyEvent/:Eid',passport.authenticate('jwt', { session: false }),(req,res)=>{
 //   console.log(req.params.Eid)
 //   console.log(req.body)
-//   query(` UPDATE events SET Date = '${req.body.date}', EventName = '${req.body.eventName}', EventAddress = '${req.body.eventAddress}', Lng = '${req.body.lng}', Lat = '${req.body.lat}' WHERE Eid = '${req.params.Eid}'`, function(err, result, fields) {
+//   connection.query(` UPDATE events SET Date = '${req.body.date}', EventName = '${req.body.eventName}', EventAddress = '${req.body.eventAddress}', Lng = '${req.body.lng}', Lat = '${req.body.lat}' WHERE Eid = '${req.params.Eid}'`, function(err, result, fields) {
 //   if (err) throw err;
 //   res.send(result);
 // })
