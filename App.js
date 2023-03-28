@@ -28,6 +28,7 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 require('./src/modules/Passport')
 
+
 //set the cors oringin for the working route 
 app.use(cors({origin: '*'})); 
 // setupping the express  & passport stuff
@@ -43,9 +44,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(upload())
 
 
-app.get('/',(req,res) =>{
-  res.send("hello")
-})
+
 
 //adding users into the DB
 // aggiiungre il token perché devi avere accesso admin
@@ -160,34 +159,18 @@ app.get('/:Uid/addFilesAccess', passport.authenticate('jwt', { session: false })
   res.status(200).json({})
 })
 
-
-//add file to db and filsystem
-//lower case latter at the beginning is important
+//storing files as a blob
 app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
-  console.log(req.body)
+  console.log(req)
+
   const folderName = `${req.body.folder}`
-  const folderPath = `${__dirname}/public/files/${folderName}`
-
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath)
-    }else{
-      //rivedere bene 
-    }
-
-  //mving files into the folders
-
-  // creating the folder
-  const DBFolderPath = `./public/files/${folderName}`
-
-
 
   async function insertFolderAndFile() {
     try {
       const result = await new Promise((resolve, reject) => {
-        connection.query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
+        connection.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (
           '${folderName}',
-          '${DBFolderPath}',
           '${req.body.idUser}')`, 
           (err, result, fields) => {
             if (err) reject(err);
@@ -200,14 +183,12 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
       if(req.files){
         for (const file in req.files) {
           console.log(`${file} : ${req.files[file].name}`)
-          let path=`./public/files/${folderName}/${req.files[file].name}`
-          req.files[file].mv(path)
-    
-        connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
-            '${req.files[file].name}',
-            '${path}',
-            '${TableID}')`, 
-          (err, result, fields) =>{
+
+          let sql = "INSERT INTO file (name, bufferData, type,folder_fk) VALUES (?,?,?,?)"
+          let values = [req.files[file].name , req.files[file].data, req.files[file].mimetype, TableID]
+
+
+        connection.query(sql, values,(err, result, fields) =>{
             if (err) throw err;
             res.status(200).json({
               result
@@ -229,7 +210,77 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
   })
 
 
+//add file to db and filsystem
+//lower case latter at the beginning is important
+// app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
+
+//   console.log(req.body)
+//   const folderName = `${req.body.folder}`
+//   const folderPath = `${__dirname}/public/files/${folderName}`
+
+//     if (!fs.existsSync(folderPath)) {
+//       fs.mkdirSync(folderPath)
+//     }else{
+//       //rivedere bene 
+//     }
+
+//   //mving files into the folders
+
+//   // creating the folder
+//   const DBFolderPath = `./public/files/${folderName}`
+
+
+
+//   async function insertFolderAndFile() {
+//     try {
+//       const result = await new Promise((resolve, reject) => {
+//         connection.query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
+//           '${folderName}',
+//           '${DBFolderPath}',
+//           '${req.body.idUser}')`, 
+//           (err, result, fields) => {
+//             if (err) reject(err);
+//             resolve(result);
+//           });
+//       });
+
+//       const TableID = result.insertId;
+
+//       if(req.files){
+//         for (const file in req.files) {
+//           console.log(`${file} : ${req.files[file].name}`)
+//           let path=`./public/files/${folderName}/${req.files[file].name}`
+//           req.files[file].mv(path)
+    
+//         connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
+//             '${req.files[file].name}',
+//             '${path}',
+//             '${TableID}')`, 
+//           (err, result, fields) =>{
+//             if (err) throw err;
+//             res.status(200).json({
+//               result
+//             })
+//           })
+  
+//       }
+    
+//       }
+
+//     } catch (error) {
+//       console.error(error);
+//     }
+
+//   }
+
+//   insertFolderAndFile();
+
+//   })
+
+
 // getting the data of the single event
+
+
 app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
   connection.query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
@@ -246,8 +297,8 @@ app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(re
 //per i file nella cartella specifica
 app.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
-  connection.query(`SELECT f.name as folder_name, f.path as folder_path, f.assigned_worker_id, 
-  fi.idFile, fi.name as file_name, fi.path as file_path, fi.folder_fk
+  connection.query(`SELECT f.name as folder_name, f.assigned_worker_id, 
+  fi.idFile, fi.name as file_name, fi.bufferData as file_data, fi.type as file_type, fi.folder_fk
 FROM folder f
 LEFT JOIN file fi ON f.idFolder = fi.folder_fk
 WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.FolderContent}'
@@ -256,20 +307,20 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
   if (err) throw err;
 
   //check sometimes this line gives you error
-
+console.log(result)
  res.json(result)
 
   });
 });
 
 
-
-app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
+//useless
+// app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
  
-const filePath = path.join(__dirname, `${req.query.filePath}`)
-res.sendFile(filePath)
+// const filePath = path.join(__dirname, `${req.query.filePath}`)
+// res.sendFile(filePath)
 
-});
+// });
 
 
   
