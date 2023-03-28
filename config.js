@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const config = {
     db: {
+      connectionLimit : 100, //important
       host: `${process.env.DB_HOSTNAME}`,
       user: `${process.env.DB_USER}`, 
       password: `${process.env.DB_PWD}`,

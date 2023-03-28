@@ -21,15 +21,15 @@ require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 // 	query
 // }
 
-const connection = mysql.createConnection(config.db);
-connection.connect(function(err) {
-	if (err) {
-	  console.error('error connecting: ' + err.stack);
-	  return;
-	}
+const connection = mysql.createPool(config.db);
+// connection.connect(function(err) {
+// 	if (err) {
+// 	  console.error('error connecting: ' + err.stack);
+// 	  return;
+// 	}
    
-	console.log('connected as id ' + connection.threadId);
-  });
+// 	console.log('connected as id ' + connection.threadId);
+//   });
 
 
  module.exports = {
