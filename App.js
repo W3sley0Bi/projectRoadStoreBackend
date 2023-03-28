@@ -63,6 +63,7 @@ res.send(result)
 
 // making the login request
 app.post('/login', (req, res)=>{
+  connection.connect();
 connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `, 
 (err, result, fields) =>{
   console.log(req.body)
@@ -115,9 +116,9 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
     });
 
 
-
-
 })
+
+connection.end();
 
 })
 
@@ -125,6 +126,7 @@ connection.query(`SELECT * FROM user WHERE name='${req.body.username}' `,
 //before sending the output requested as result
 app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>{
   //remember to change the connection.query and not retrive everything but only the date that we want in the output
+  connection.connect();
   connection.query(`SELECT role_fk FROM user WHERE access_token = '${req.header("Authorization")}'`, 
   (err, result, fields) =>{
     if (err) throw err;
@@ -150,7 +152,7 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 
 
 })
-
+connection.end();
 })
 
 //check if he has the rights to access this page
@@ -182,6 +184,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
 
 
   async function insertFolderAndFile() {
+    connection.connect();
     try {
       const result = await new Promise((resolve, reject) => {
         connection.query(`INSERT INTO folder (name, path, assigned_worker_id) VALUES (
@@ -201,7 +204,8 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
           console.log(`${file} : ${req.files[file].name}`)
           let path=`./public/files/${folderName}/${req.files[file].name}`
           req.files[file].mv(path)
-    
+
+          
         connection.query(`INSERT INTO file (name, path,	folder_fk) VALUES (
             '${req.files[file].name}',
             '${path}',
@@ -212,6 +216,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
               result
             })
           })
+        
   
       }
     
@@ -220,7 +225,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
     } catch (error) {
       console.error(error);
     }
-
+    connection.end();
   }
 
   insertFolderAndFile();
@@ -231,6 +236,7 @@ app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,
 // getting the data of the single event
 app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
+  connection.connect();
   connection.query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
 (err, result, fields) =>{
   if (err) throw err;
@@ -238,13 +244,14 @@ app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(re
     result
   })
 })
-
+connection.end();
 })
 
 
 //per i file nella cartella specifica
 app.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),(req,res)=>{
   //start from here
+  connection.connect();
   connection.query(`SELECT f.name as folder_name, f.path as folder_path, f.assigned_worker_id, 
   fi.idFile, fi.name as file_name, fi.path as file_path, fi.folder_fk
 FROM folder f
@@ -259,6 +266,7 @@ WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.
  res.json(result)
 
   });
+  connection.end();
 });
 
 
