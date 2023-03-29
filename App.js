@@ -158,14 +158,14 @@ app.get('/workers', passport.authenticate('jwt', { session: false }),(req,res)=>
 
 //check if he has the rights to access this page
 //the Capital letter is important
-app.get('/:Uid/addFilesAccess', passport.authenticate('jwt', { session: false }),(req,res)=>{
-  res.status(200).json({})
-})
+// app.get('/:Uid/addFilesAccess', passport.authenticate('jwt', { session: false }),(req,res)=>{
+//   res.status(200).json({})
+// })
 
 //storing files as a blob
-app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
+app.post('/:Uid/addFolder',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
-  console.log(req)
+  console.log(req.body)
 
   const folderName = `${req.body.folder}`
 
