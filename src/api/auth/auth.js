@@ -35,15 +35,21 @@ async function login(req,res,next){
 			Username: userData.name,
 			Role: userData.role_fk,
 		}
+		
+
+		
 
 		//creating a signature for the token and passing the payload, the secretkey and some options
 		const token = jwt.sign(payload, config.jwt, { expiresIn: "20d" })
 		await db.query(`UPDATE user SET access_token = 'Bearer ${token}' WHERE name='${req.body.username}'`);
 
+		payload.email = userData.email;
+
 		res.status(200).json({
 			success: true,
 			message: 'logged',
-			token: token
+			token: token,
+			userData: userData
 		});
 
 	} catch (err){

@@ -25,4 +25,3 @@ passport.use(new JwtStrategy(opts,  async function(jwt_payload, done) {
     }
 }));
 
-

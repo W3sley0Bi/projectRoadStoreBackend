@@ -1,6 +1,11 @@
 #dependencies
 /node_modules
-/public/files/
+# /public/files/ remove all the folders be
 
 #local env files
 .env
+**/.DS_Store
+.DS_Store
+/public/.DS_Store
+/src/.DS_Store
+

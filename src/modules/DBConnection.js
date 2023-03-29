@@ -1,12 +1,13 @@
 //with mySQL2 we are not closing the connection with the db 
-const mysql = require('mysql2/promise');
+// const mysql = require('mysql2/promise');
+const mysql = require('mysql');
 const path = require('path');
 const config = require('../../config.js');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') })
+require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 async function connect() {
 	try{
-		const conn = mysql.createConnection(config.db);
+		const conn = mysql.createPool(config.db);
 		return conn;
 	}catch(err){
 		return err.message;
