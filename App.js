@@ -59,9 +59,9 @@ app.use((err, req, res, next) => {
 // })
 
 //storing files as a blob
-app.post('/:Uid/addFiles',passport.authenticate('jwt', { session: false }),(req,res)=>{
+app.post('/:Uid/addFolder',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
-  console.log(req)
+  console.log(req.body)
 
   const folderName = `${req.body.folder}`
 
