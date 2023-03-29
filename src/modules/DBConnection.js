@@ -1,22 +1,38 @@
 //with mySQL2 we are not closing the connection with the db 
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const path = require('path');
 const config = require('../../config.js');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') })
 
-async function query(sql, params) {
-
-	try {
-		const connection = await mysql.createConnection(config.db);
-		if (connection.state === 'disconnected') throw new Error('rotto');
-		const [results,] = await connection.execute(sql, params);
-		return results;
-	} catch (ex) {
-		return Error
+async function connect() {
+	try{
+		const conn = mysql.createConnection(config.db);
+		return conn;
+	}catch(err){
+		return err.message;
 	}
-
 }
 
+async function query(sql, params) {
+	const conn = await connect();
+	try{
+		return await conn.query(sql, params);
+	}catch(err){
+		return err.message;
+	}
+}
+
+// async function queryWcb(sql, params) {
+// 	const conn = await connect();
+// 	try{
+// 		await conn.execute(sql, params);
+// 	}catch(err){
+// 		return err.message;
+// 	}
+// }
+
 module.exports = {
-	query
+	connect,
+	query,
+	// queryWcb
 }

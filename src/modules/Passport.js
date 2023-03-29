@@ -3,26 +3,26 @@
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const passport = require('passport');
-const { connection } = require('./DBConnection');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') })
+const db = require('./DBConnection');
 
+const config = require('../../config.js');
 
 opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey : process.env.SECRETJWT,
+    secretOrKey : config.jwt
 }
 
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    connection.query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}' `, function(err, user) {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false);
-            // or you could create a new account
-        }
-    });
+
+passport.use(new JwtStrategy(opts,  async function(jwt_payload, done) {
+    console.log(jwt_payload);
+    const result = await db.query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}'`);
+    // console.log(result);
+    const data = result[0][0];
+    if(!Object.keys(result[0]).length === 0){
+        return done(err, false);
+    }else{
+        return done(null,data)
+    }
 }));
+
+

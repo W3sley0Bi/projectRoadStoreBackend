@@ -2,9 +2,9 @@
   "name": "safetyhelmentbackend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "App.js",
   "scripts": {
-    "start": "node src/App.js",
+    "start": "node App.js",
     "nodemon": "nodemon App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,7 +28,7 @@
     "mv": "^2.1.1",
     "mysql2": "^3.2.0",
     "passport": "^0.6.0",
-    "passport-jwt": "^4.0.0",
+    "passport-jwt": "^4.0.1",
     "uuid": "^8.3.2"
   }
 }
