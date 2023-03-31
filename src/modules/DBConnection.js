@@ -3,28 +3,31 @@
 const mysql = require('mysql');
 const path = require('path');
 const config = require('../../config.js');
+const { log } = require('console');
 require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
+
+let pool;
 
 async function connect() {
 	try{
-		const conn = await mysql.createPool(config.db);
-		console.log('connected');
-		return conn;
+		pool = mysql.createPool(config.db);
 	}catch(err){
 		return err.message;
 	}
 }
 
-
 async function query(sql, params) {
-	const conn = await connect();
 	try{
 		return new Promise((resolve, reject) => {
-			conn.query(sql, params,function(err,results,fields){
-				if(err) return reject(err);
-				resolve(results);
+		pool.getConnection(async function(err, conn) {
+			if(err) throw err
+				conn.query(sql, params,function(err,results,fields){
+					conn.release();
+					if(err) return reject(err);
+					resolve(results);
+				});
 			});
-		});
+		})
 	}catch(err){
 		return err.message;
 	}
