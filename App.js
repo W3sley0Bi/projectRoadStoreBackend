@@ -198,14 +198,6 @@ app.listen(cfg.port,() =>{
 // })
 
 
-//per i file nella cartella specifica
-app.get(`getPools`,(req,res)=>{
-  
-
-
-});
-
-
 //useless
 // app.get(`/getdocument/:idFile`, passport.authenticate('jwt', { session: false }),(req,res)=>{
  
