@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, './.env') })
 
 const config = {
     db: {
-      connLimit: process.env.CONN_LIMIT,
+      connectionLimit: process.env.CONN_LIMIT,
       host: process.env.DB_HOSTNAME,
       user: process.env.DB_USER, 
       password: process.env.DB_PWD,
