@@ -10,13 +10,13 @@ async function registration(req, res, next) {
 		// 	console.log(result)
 		// 	if (result == undefined || result == null) return res.status(400).json({ message: `Username ${req.body.username} already taken` });
 		// })
-		 	db.query(`INSERT INTO user (name, password) VALUES (
+		 	db.query(`INSERT INTO user (name, password, role_fk) VALUES (
 				'${req.body.username}',
-				'${hashSync(req.body.password,10)}')`, (err, result, fields) => {
+				'${hashSync(req.body.password,10)}',
+				'2')`, (err, result, fields) => {
 			  if (err) throw err
 			return res.status(201).json({ message: 'User registered' })});
 
-		
 	} catch (err) {
 		res.status(400).json({ message: err.message });
 		next(err);
