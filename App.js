@@ -46,6 +46,11 @@ app.use((err, req, res, next) => {
   return;
 });
 
+app.listen(cfg.port,() =>{
+  console.log(`listening on ${cfg.port} `);
+  console.log(`http://localhost:${cfg.port}/`)
+})
+
 
 
 
@@ -59,54 +64,54 @@ app.use((err, req, res, next) => {
 // })
 
 //storing files as a blob
-app.post('/:Uid/addFolder',passport.authenticate('jwt', { session: false }),(req,res)=>{
+// app.post('/:Uid/addFolder',passport.authenticate('jwt', { session: false }),(req,res)=>{
 
-  console.log(req.body)
+//   console.log(req.body)
 
-  const folderName = `${req.body.folder}`
+//   const folderName = `${req.body.folder}`
 
-  async function insertFolderAndFile() {
-    try {
-      const result = await new Promise((resolve, reject) => {
-        connection.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (
-          '${folderName}',
-          '${req.body.idUser}')`, 
-          (err, result, fields) => {
-            if (err) reject(err);
-            resolve(result);
-          });
-      });
+//   async function insertFolderAndFile() {
+//     try {
+//       const result = await new Promise((resolve, reject) => {
+//         connection.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (
+//           '${folderName}',
+//           '${req.body.idUser}')`, 
+//           (err, result, fields) => {
+//             if (err) reject(err);
+//             resolve(result);
+//           });
+//       });
 
-      const TableID = result.insertId;
+//       const TableID = result.insertId;
 
-      if(req.files){
-        for (const file in req.files) {
-          console.log(`${file} : ${req.files[file].name}`)
+//       if(req.files){
+//         for (const file in req.files) {
+//           console.log(`${file} : ${req.files[file].name}`)
 
-          let sql = "INSERT INTO file (name, bufferData, type,folder_fk) VALUES (?,?,?,?)"
-          let values = [req.files[file].name , req.files[file].data, req.files[file].mimetype, TableID]
+//           let sql = "INSERT INTO file (name, bufferData, type,folder_fk) VALUES (?,?,?,?)"
+//           let values = [req.files[file].name , req.files[file].data, req.files[file].mimetype, TableID]
 
 
-        connection.query(sql, values,(err, result, fields) =>{
-            if (err) throw err;
-            res.status(200).json({
-              result
-            })
-          })
+//         connection.query(sql, values,(err, result, fields) =>{
+//             if (err) throw err;
+//             res.status(200).json({
+//               result
+//             })
+//           })
   
-      }
+//       }
     
-      }
+//       }
 
-    } catch (error) {
-      console.error(error);
-    }
+//     } catch (error) {
+//       console.error(error);
+//     }
 
-  }
+//   }
 
-  insertFolderAndFile();
+//   insertFolderAndFile();
 
-  })
+//   })
 
 
 //add file to db and filsystem
@@ -180,36 +185,24 @@ app.post('/:Uid/addFolder',passport.authenticate('jwt', { session: false }),(req
 // getting the data of the single event
 
 
-app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
-  //start from here
-  connection.query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
-(err, result, fields) =>{
-  if (err) throw err;
-  res.json({
-    result
-  })
-})
+// app.get(`/userFolder/:Uid`, passport.authenticate('jwt', { session: false }),(req,res)=>{
+//   //start from here
+//   connection.query(`SELECT idFolder, name, assigned_worker_id FROM folder WHERE assigned_worker_id = '${req.params.Uid}' `, 
+// (err, result, fields) =>{
+//   if (err) throw err;
+//   res.json({
+//     result
+//   })
+// })
 
-})
+// })
 
 
 //per i file nella cartella specifica
-app.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),(req,res)=>{
-  //start from here
-  connection.query(`SELECT f.name as folder_name, f.assigned_worker_id, 
-  fi.idFile, fi.name as file_name, fi.bufferData as file_data, fi.type as file_type, fi.folder_fk
-FROM folder f
-LEFT JOIN file fi ON f.idFolder = fi.folder_fk
-WHERE f.assigned_worker_id = '${req.params.Uid}' AND f.idFolder = '${req.params.FolderContent}'
-`, 
- (err, result, fields) =>{
-  if (err) throw err;
+app.get(`getPools`,(req,res)=>{
+  
 
-  //check sometimes this line gives you error
-console.log(result)
- res.json(result)
 
-  });
 });
 
 
@@ -435,8 +428,5 @@ console.log(result)
 //   });
 // }
 
-app.listen(cfg.port,() =>{
-  console.log(`listening on ${cfg.port} `);
-  console.log(`http://localhost:${cfg.port}/`)
-})
+
 

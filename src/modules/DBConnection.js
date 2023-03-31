@@ -7,17 +7,24 @@ require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 async function connect() {
 	try{
-		const conn = mysql.createPool(config.db);
+		const conn = await mysql.createPool(config.db);
+		console.log('connected');
 		return conn;
 	}catch(err){
 		return err.message;
 	}
 }
 
+
 async function query(sql, params) {
 	const conn = await connect();
 	try{
-		return await conn.query(sql, params);
+		return new Promise((resolve, reject) => {
+			conn.query(sql, params,function(err,results,fields){
+				if(err) return reject(err);
+				resolve(results);
+			});
+		});
 	}catch(err){
 		return err.message;
 	}

@@ -15,13 +15,16 @@ opts = {
 
 passport.use(new JwtStrategy(opts,  async function(jwt_payload, done) {
     console.log(jwt_payload);
-    const result = await db.query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}'`);
-    // console.log(result);
-    const data = result[0][0];
-    if(!Object.keys(result[0]).length === 0){
-        return done(err, false);
-    }else{
-        return done(null,data)
-    }
+    await db.query(`SELECT * FROM user WHERE idUser='${jwt_payload.Uid}'`,function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
+    });
 }));
 
