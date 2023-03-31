@@ -20,6 +20,7 @@ async function registration(req, res, next) {
 async function login(req, res, next) {
 	try {
 		const results = await db.query(`SELECT * FROM user WHERE name = ? `, [req.body.username]);
+		console.log(results)
 		if (results.length == 0) return res.status(400).json({ message: `${req.body.username} not found ` });
 
 		const userData = results[0];

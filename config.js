@@ -7,10 +7,10 @@ const config = {
       host: process.env.DB_HOSTNAME,
       user: process.env.DB_USER, 
       password: process.env.DB_PWD,
-      database: process.env.DB_NAME
-      //port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
     },
-    port: process.env.PORT ? process.env.PORT : 3000,
+    port: process.env.PORT ? process.env.PORT : 3001,
     jwt: process.env.SECRETJWT ? process.env.SECRETJWT : "forzaNapoli",
     listPerPage: 10,
   };

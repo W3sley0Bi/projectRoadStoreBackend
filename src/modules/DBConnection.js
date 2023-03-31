@@ -7,7 +7,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../../.env') })
 
 async function connect() {
 	try{
-		const conn = mysql.createPool(config.db);
+		const conn = await mysql.createPool(config.db);
 		console.log('connected');
 		return conn;
 	}catch(err){
