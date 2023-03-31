@@ -4,7 +4,7 @@ const cfg = require('./config.js')
 const upload = require('express-fileupload')
 const bodyParser = require('body-parser');
 const router = require('./routes')
-const pool = require("./src/modules/DBConnection.js");
+//const pool = require("./src/modules/DBConnection.js");
 
 const cors = require("cors");
 // const { hashSync, compareSync } = require('bcrypt')
@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
 app.listen(cfg.port,() =>{
   console.log(`listening on ${cfg.port} `);
   console.log(`http://localhost:${cfg.port}/`)
-  pool.connect(cfg.db);
+  // pool.connect(cfg.db);
 })
 
 
