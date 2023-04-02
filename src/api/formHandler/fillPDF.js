@@ -112,7 +112,9 @@ const sendMail = async (pdfFile) => {
   const html = `<p>user X has finished his job</p>`
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: config.emails.sender,
       pass: config.emails.senderPwd
@@ -144,9 +146,6 @@ const sendMail = async (pdfFile) => {
 
 
 }
-
-
-
 
 
 module.exports = {
