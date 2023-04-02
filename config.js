@@ -16,7 +16,12 @@ const config = {
     emails:{
       sender: process.env.EMAIL_SENDER,
       senderPwd: process.env.EMAIL_SENDER_PWD,
-      receivers: [`${process.env.EMAIL_RECEIVER1}`,`${process.env.EMAIL_RECEIVER2}`,`${process.env.EMAIL_RECEIVER3}`]
+      receivers: [`${process.env.EMAIL_RECEIVER1}`,`${process.env.EMAIL_RECEIVER2}`,`${process.env.EMAIL_RECEIVER3}`],
+      google:{ 
+        clientId: process.env.OAUTH_CLIENTID,
+        clientSecret: process.env.OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.OAUTH_REFRESH_TOKEN
+      }
     }
   };
   module.exports = config;

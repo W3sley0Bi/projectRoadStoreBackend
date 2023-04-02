@@ -112,12 +112,13 @@ const sendMail = async (pdfFile) => {
   const html = `<p>user X has finished his job</p>`
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    service:'gmail',
     auth: {
       user: config.emails.sender,
-      pass: config.emails.senderPwd
+      pass: config.emails.senderPwd,
+        clientId: config.emails.google.clientId,
+        clientSecret: config.emails.google.clientSecret,
+        refreshToken: config.emails.google.refreshToken
     }
   })
 
