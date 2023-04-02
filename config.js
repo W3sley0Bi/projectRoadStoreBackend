@@ -20,7 +20,8 @@ const config = {
       google:{ 
         clientId: process.env.OAUTH_CLIENTID,
         clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN
+        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+        redirectURI: 'https://developers.google.com/oauthplayground' 
       }
     }
   };
