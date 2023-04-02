@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('./src/api/auth/auth');
 const user = require('./src/api/user/user');
+const form = require('./src/api/formHandler/fillPDF')
 const passport = require('passport');
 
 
@@ -37,6 +38,11 @@ router.get('/userFolder/:Uid', passport.authenticate('jwt', { session: false }),
 router.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
 	await user.getFolderContent(req,res,next);
 });
+
+router.post(`/formSign`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
+	await form.fillPDF(req,res,next);
+});
+
 
 
 

@@ -13,5 +13,10 @@ const config = {
     port: process.env.PORT ? process.env.PORT : 3001,
     jwt: process.env.SECRETJWT ? process.env.SECRETJWT : "forzaNapoli",
     listPerPage: 10,
+    emails:{
+      sender: process.env.EMAIL_SENDER,
+      senderPwd: process.env.EMAIL_SENDER_PWD,
+      receivers: [`${process.env.EMAIL_RECEIVER1}`,`${process.env.EMAIL_RECEIVER2}`,`${process.env.EMAIL_RECEIVER3}`]
+    }
   };
   module.exports = config;
