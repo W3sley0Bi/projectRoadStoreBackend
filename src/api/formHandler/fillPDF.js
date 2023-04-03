@@ -6,7 +6,10 @@ const config = require("../../../config");
 // const { google }= require("googleapis")
 
 async function fillPDF(req, res, next) {
-//console.log(req.body)
+let bodyData =  JSON.parse(req.body.pdfData)
+
+
+
 try{
 const pdfData = await fs.readFile('public/LK-Fillable-3.pdf');
 const pdfDoc = await PDFDocument.load(pdfData);
@@ -15,25 +18,25 @@ console.log({fieldNames})
 
  const form = pdfDoc.getForm()
 
- form.getTextField('196525635').setText(req.body['pdfData[field1]'])
- form.getTextField('196525636').setText(req.body['pdfData[field2]'])
- form.getTextField('196525637').setText(req.body['pdfData[filedDate1]'])
- form.getTextField('196525639').setText(req.body['pdfData[filedDate2]'])
- form.getTextField('196525638').setText(req.body['pdfData[filedDate3]'])
- form.getTextField('196525640').setText(req.body['pdfData[filedDate4]'])
+ form.getTextField('196525635').setText(bodyData.field1)
+ form.getTextField('196525636').setText(bodyData.field2)
+ form.getTextField('196525637').setText(bodyData.filedDate1)
+ form.getTextField('196525639').setText(bodyData.filedDate2)
+ form.getTextField('196525638').setText(bodyData.filedDate3)
+ form.getTextField('196525640').setText(bodyData.filedDate4)
  
- switch (req.body['pdfData[radioValue]']) {
+ switch (bodyData.radioValue) {
   case "radio1":
     //first radio
-    form.getCheckBox('radio_group_10wgzk').check(req.body['pdfData[radioValue]']);
+    form.getCheckBox('radio_group_10wgzk').check(bodyData.radioValue);
     break;
   case "radio2":
      //second radio
-      form.getCheckBox('radio_group_11hgaz').check(req.body['pdfData[radioValue]']);
+      form.getCheckBox('radio_group_11hgaz').check(bodyData.radioValue);
     break;  
   case "radio3":
       //third radio
-    form.getCheckBox('radio_group_12egcu').check(req.body['pdfData[radioValue]']);
+    form.getCheckBox('radio_group_12egcu').check(bodyData.radioValue);
     break;
  
   default:
@@ -41,19 +44,36 @@ console.log({fieldNames})
  }
 
   
- await pdfSignature(form,pdfDoc,req.body['pdfData[sign1]'],'dhFormfield-4162965191')
- await pdfSignature(form,pdfDoc,req.body['pdfData[sign2]'],'dhFormfield-4162965467')
+ await pdfSignature(form,pdfDoc,bodyData.sign1,'dhFormfield-4162965191')
+ await pdfSignature(form,pdfDoc,bodyData.sign2,'dhFormfield-4162965467')
 
  
- const pdfBytes = await pdfDoc.save();
+const pdfBytes = await pdfDoc.save();
 
-const response = await sendEmail(pdfBytes)
-console.log(response)
-res.sendStatus(200).json(response)
+let attachments = [{
+  filename: "filenameTest.pdf",
+  content: pdfBytes,
+}]
+
+
+const html = `<div>user X has finished his job</div>`
+
+for(const property in req.files){
+  attachments.push({
+    filename: req.files[property].name,
+    content: req.files[property].data
+  })
+}
+
+
+
+await sendEmail(attachments, html)
+
+res.sendStatus(200)
+
 //  db.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (?,?)`,
 //   [folderName, req.body.idUser],
 //   (err, result, fields) => {})
-
 
 }catch (err){
 console.log(err)
@@ -107,10 +127,10 @@ sig.acroField.getWidgets().forEach((widget) => {
   });
 }
 
-const sendEmail = async (pdfFile) => {
+const sendEmail = async (attachments,html) => {
 
   try {
-const html = `<p>user X has finished his job</p>`
+
 
 
 const transporter = nodemailer.createTransport({
@@ -127,10 +147,7 @@ const transporter = nodemailer.createTransport({
     to: config.emails.receivers,
     subject: 'Job Done',
     html: html,
-    attachments:[{
-      filename: "filenameTest.pdf",
-      content: pdfFile,
-    }]
+    attachments: attachments
   };
 
 
