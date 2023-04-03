@@ -67,7 +67,7 @@ for(const property in req.files){
   })
 }
 
-console.log(req.files)
+console.log(req)
 
 
 await sendEmail(attachments, html)

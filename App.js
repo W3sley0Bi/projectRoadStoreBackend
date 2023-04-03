@@ -32,8 +32,10 @@ app.use(express.urlencoded({extended: true}));
 // for statc element like files or static pages
 //retrieving file from the client use this system
 app.use(express.static(__dirname + '/public'))
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 app.use(upload());
 app.use(passport.initialize());
 app.use("/", router);
