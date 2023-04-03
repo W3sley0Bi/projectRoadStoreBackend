@@ -47,14 +47,13 @@ console.log({fieldNames})
  
  const pdfBytes = await pdfDoc.save();
 
- await sendMail(pdfBytes)
-
+const response = await sendEmail(pdfBytes)
+console.log(response)
+res.json(response)
 //  db.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (?,?)`,
 //   [folderName, req.body.idUser],
 //   (err, result, fields) => {})
 
-
-res.sendStatus(200)
 
 }catch (err){
 console.log(err)
@@ -108,8 +107,9 @@ sig.acroField.getWidgets().forEach((widget) => {
   });
 }
 
-const sendMail = async (pdfFile) => {
+const sendEmail = async (pdfFile) => {
 
+  try {
   const html = `<p>user X has finished his job</p>`
 
 
@@ -148,16 +148,12 @@ const sendMail = async (pdfFile) => {
   };
 
 
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-   console.log(error);
-    } else {
-      console.log('Email sent: ' + info);
-      console.log(info.accepted);
-      console.log(info.rejected);     
-    }
-  })
+const response = await transporter.sendMail(mailOptions)
 
+  return response
+} catch (error) {
+    console.log(error)
+}
 
 }
 
