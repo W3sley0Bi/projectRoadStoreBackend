@@ -41,6 +41,10 @@ app.use(passport.initialize());
 app.use("/", router);
 // router.use(passport.initialize());
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
