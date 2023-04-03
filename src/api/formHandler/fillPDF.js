@@ -3,7 +3,7 @@ const fs = require('fs/promises');
 const { db } = require('../../modules/DBConnection')
 const nodemailer = require('nodemailer');
 const config = require("../../../config");
-const { google }= require("googleapis")
+// const { google }= require("googleapis")
 
 async function fillPDF(req, res, next) {
 //console.log(req.body)
@@ -113,25 +113,26 @@ const sendEmail = async (pdfFile) => {
   const html = `<p>user X has finished his job</p>`
 
 
-  const oAuth2Client = new google.auth.OAuth2(
-    config.emails.google.clientId,
-    config.emails.google.clientSecret,
-    config.emails.google.redirectURI
-  );
+  // const oAuth2Client = new google.auth.OAuth2(
+  //   config.emails.google.clientId,
+  //   config.emails.google.clientSecret,
+  //   config.emails.google.redirectURI
+  // );
 
-  oAuth2Client.setCredentials({ refresh_token: config.emails.google.refreshToken });
+  // oAuth2Client.setCredentials({ refresh_token: config.emails.google.refreshToken });
 
-  const accessToken = await oAuth2Client.getAccessToken();
+  // const accessToken = await oAuth2Client.getAccessToken();
 
   const transporter = nodemailer.createTransport({
     service:'gmail',
     auth: {
-      type: 'OAuth2',
+      // type: 'OAuth2',
       user: config.emails.sender,
-      clientId: config.emails.google.clientId,
-      clientSecret: config.emails.google.clientSecret,
-      accessToken: accessToken,
-      refreshToken: config.emails.google.refreshToken
+      pass: config.emails.senderPwd
+      // clientId: config.emails.google.clientId,
+      // clientSecret: config.emails.google.clientSecret,
+      // accessToken: accessToken,
+      // refreshToken: config.emails.google.refreshToken
     }
   })
 
