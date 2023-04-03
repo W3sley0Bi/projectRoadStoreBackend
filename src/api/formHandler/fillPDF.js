@@ -8,7 +8,7 @@ const config = require("../../../config");
 async function fillPDF(req, res, next) {
 let bodyData =  JSON.parse(req.body.pdfData)
 
-
+console.log(req)
 
 try{
 const pdfData = await fs.readFile('public/LK-Fillable-3.pdf');
@@ -56,7 +56,7 @@ let attachments = [{
 }]
 
 
-const html = `<div> <p>user ${req.body.Uid} has finished his job </p> </br><h1>Notes </h1></br> <p>${req.body.textArea}</p></div>`
+const html = `<div> <p>user ${req.user.name} has finished his job </p> </br><h1>Notes </h1></br> <p>${req.body.textArea}</p></div>`
 
 
 
@@ -67,7 +67,7 @@ for(const property in req.files){
   })
 }
 
-console.log(req)
+
 
 
 await sendEmail(attachments, html)

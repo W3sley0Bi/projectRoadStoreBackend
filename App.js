@@ -26,15 +26,15 @@ const app = express()
 //set the cors oringin for the working route 
 app.use(cors({origin: '*'})); 
 // setupping the express  & passport stuff
-app.use(express.json()); 
-app.use(express.urlencoded({extended: true}));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // for statc element like files or static pages
 //retrieving file from the client use this system
 app.use(express.static(__dirname + '/public'))
 
-app.use(bodyParser.json({ limit: '200mb' }));
-app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(upload());
 app.use(passport.initialize());
