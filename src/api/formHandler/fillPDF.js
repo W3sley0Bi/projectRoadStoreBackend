@@ -58,6 +58,8 @@ let attachments = [{
 
 const html = `<div>user X has finished his job</div>`
 
+
+
 for(const property in req.files){
   attachments.push({
     filename: req.files[property].name,
@@ -65,6 +67,7 @@ for(const property in req.files){
   })
 }
 
+console.log(attachments)
 
 
 await sendEmail(attachments, html)
