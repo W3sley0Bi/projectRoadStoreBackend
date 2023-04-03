@@ -56,7 +56,7 @@ let attachments = [{
 }]
 
 
-const html = `<div>user X has finished his job</div>`
+const html = `<div> <p>user ${req.body.Uid} has finished his job </p> </br><h1>Notes </h1></br> <p>${req.body.textArea}</p></div>`
 
 
 
@@ -67,10 +67,10 @@ for(const property in req.files){
   })
 }
 
-console.log(attachments)
+console.log(req.body.textArea)
 
 
-await sendEmail(attachments, html)
+//await sendEmail(attachments, html)
 
 res.sendStatus(200)
 
