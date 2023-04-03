@@ -22,7 +22,6 @@
     "express-mysql-session": "^2.1.8",
     "express-openid-connect": "^2.7.2",
     "express-session": "^1.17.3",
-    "googleapis": "^114.0.0",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "nodemailer": "^6.9.1",

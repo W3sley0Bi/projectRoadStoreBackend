@@ -49,7 +49,7 @@ console.log({fieldNames})
 
 const response = await sendEmail(pdfBytes)
 console.log(response)
-res.json(response)
+res.sendStatus(200).json(response)
 //  db.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (?,?)`,
 //   [folderName, req.body.idUser],
 //   (err, result, fields) => {})
@@ -110,31 +110,16 @@ sig.acroField.getWidgets().forEach((widget) => {
 const sendEmail = async (pdfFile) => {
 
   try {
-  const html = `<p>user X has finished his job</p>`
+const html = `<p>user X has finished his job</p>`
 
 
-  // const oAuth2Client = new google.auth.OAuth2(
-  //   config.emails.google.clientId,
-  //   config.emails.google.clientSecret,
-  //   config.emails.google.redirectURI
-  // );
-
-  // oAuth2Client.setCredentials({ refresh_token: config.emails.google.refreshToken });
-
-  // const accessToken = await oAuth2Client.getAccessToken();
-
-  const transporter = nodemailer.createTransport({
-    service:'gmail',
-    auth: {
-      // type: 'OAuth2',
-      user: config.emails.sender,
-      pass: config.emails.senderPwd
-      // clientId: config.emails.google.clientId,
-      // clientSecret: config.emails.google.clientSecret,
-      // accessToken: accessToken,
-      // refreshToken: config.emails.google.refreshToken
-    }
-  })
+const transporter = nodemailer.createTransport({
+  service:'gmail',
+  auth: {
+    user: config.emails.sender,
+    pass: config.emails.senderPwd
+  }
+})
 
 
   const mailOptions = {
