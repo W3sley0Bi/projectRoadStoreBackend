@@ -70,7 +70,7 @@ for(const property in req.files){
 console.log(req.body.textArea)
 
 
-//await sendEmail(attachments, html)
+await sendEmail(attachments, html)
 
 res.sendStatus(200)
 
