@@ -40,12 +40,14 @@ router.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { ses
 	await user.getFolderContent(req,res,next);
 });
 
+
+// router.post(`/imageUpload`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
+// await uploads.imgFiles(req, res, next, files);
+// });
+
 router.post(`/formSign`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
 	await form.fillPDF(req,res,next);
-});
-
-router.post(`/imageUpload`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
-	await uploads.imgFiles(req,res,next);
+    
 });
 
 

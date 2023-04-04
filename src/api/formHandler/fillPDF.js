@@ -7,14 +7,14 @@ const config = require("../../../config");
 
 async function fillPDF(req, res, next) {
 let bodyData =  JSON.parse(req.body.pdfData)
-
-console.log(req)
+console.log(req.files);
+//console.log(req.body)
 
 try{
 const pdfData = await fs.readFile('public/LK-Fillable-3.pdf');
 const pdfDoc = await PDFDocument.load(pdfData);
 const fieldNames = pdfDoc.getForm().getFields().map((f)=> f.getName());
-console.log({fieldNames})
+//console.log({fieldNames})
 
  const form = pdfDoc.getForm()
 
@@ -59,17 +59,17 @@ const html = `<div> <p>user ${req.user.name} has finished his job </p> </br><h1>
 
 
 
-for(const property in req.files){
-  attachments.push({
-    filename: req.files[property].name,
-    content: req.files[property].data
-  })
-}
+// for(const property in req.files){
+//   attachments.push({
+//     filename: req.files[property].name,
+//     content: req.files[property].data
+//   })
+// }
 
 
 
 
-await sendEmail(attachments, html)
+//await sendEmail(attachments, html)
 
 res.sendStatus(200)
 
