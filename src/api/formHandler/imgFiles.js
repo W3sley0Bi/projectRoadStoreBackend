@@ -13,7 +13,10 @@ const imgFiles = async (req,res,next) => {
                   req.files[file].data,
                   req.files[file].mimetype,
                   req.body.folder*1,
-                ]);
+                ],(err,result)=>{
+                    if(err) console.log(err)
+                    console.log(result)
+                });
             }
 
         }
