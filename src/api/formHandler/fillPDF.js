@@ -43,7 +43,6 @@ console.log({fieldNames})
     break;
  }
 
-  
  await pdfSignature(form,pdfDoc,bodyData.sign1,'dhFormfield-4162965191')
  await pdfSignature(form,pdfDoc,bodyData.sign2,'dhFormfield-4162965467')
 

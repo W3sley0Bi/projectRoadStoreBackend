@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('./src/api/auth/auth');
 const user = require('./src/api/user/user');
 const form = require('./src/api/formHandler/fillPDF')
+const uploads = require('./src/api/formHandler/imgFiles')
 const passport = require('passport');
 
 
@@ -42,6 +43,11 @@ router.get(`/userFolder/:Uid/:FolderContent`, passport.authenticate('jwt', { ses
 router.post(`/formSign`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
 	await form.fillPDF(req,res,next);
 });
+
+router.post(`/imageUpload`, passport.authenticate('jwt', { session: false }),async (req,res,next)=>{
+	await uploads.imgFiles(req,res,next);
+});
+
 
 
 
