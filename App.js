@@ -10,17 +10,6 @@ const cors = require("cors");
 // const { hashSync, compareSync } = require('bcrypt')
 const passport = require('passport');
 require('./src/modules/Passport');
-// require('./src/modules/Passport')
-// require('dotenv').config()
-//cors is used for allowing to access to these apis
-// used for the encryption and thecryption of the password for the users
-
-// used for generating a unique id
-// const { v4: uuidv4 } = require('uuid');
-// const { hostname } = require('os');
-
-// jwt is used for chckeing the sessione token
-// library that allow us to use the jwt easly
 
 const app = express()
 //set the cors oringin for the working route 
@@ -39,21 +28,6 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(upload());
 app.use(passport.initialize());
 app.use("/", router);
-// router.use(passport.initialize());
-
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'https://projectroadstorefrontend-production.up.railway.app')
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  // Pass to next layer of middleware
-  next();
-});
 
 
 app.use((err, req, res, next) => {
@@ -66,7 +40,7 @@ app.use((err, req, res, next) => {
 app.listen(cfg.port,() =>{
   console.log(`listening on ${cfg.port} `);
   console.log(`http://localhost:${cfg.port}/`)
-  // pool.connect(cfg.db);
+
 })
 
 
