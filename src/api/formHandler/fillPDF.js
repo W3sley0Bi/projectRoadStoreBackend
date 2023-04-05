@@ -58,9 +58,12 @@ let attachments = [{
 
 const html = `<div> <p>user ${req.user.name} has finished his job </p> </br><h1>Notes </h1></br> <p>${req.body.textArea}</p></div>`
 
+
 for(const property in imageData){
+
   const base64EncodedImage = imageData[property]; // your base64 encoded image string
 const buffer = Buffer.from(base64EncodedImage.split(',')[1], 'base64');
+//console.log(buffer)
   attachments.push({
     filename: `${property}.jpg`,
     content: buffer
@@ -73,7 +76,9 @@ await sendEmail(attachments, html)
 
 res.sendStatus(200)
 
-
+//  db.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (?,?)`,
+//   [folderName, req.body.idUser],
+//   (err, result, fields) => {})
 
 }catch (err){
 console.log(err)
