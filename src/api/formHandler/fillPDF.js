@@ -1,14 +1,15 @@
-const { PDFDocument, drawRectangle, rgb, degrees, drawImage, PDFRadioGroup } = require('pdf-lib')
-const fs = require('fs/promises');
-const { db } = require('../../modules/DBConnection')
+const { PDFDocument, drawRectangle, rgb, degrees, drawImage } = require('pdf-lib')
+ const fs = require('fs/promises');
+// const { db } = require('../../modules/DBConnection')
 const nodemailer = require('nodemailer');
 const config = require("../../../config");
 // const { google }= require("googleapis")
 
 async function fillPDF(req, res, next) {
 let bodyData =  JSON.parse(req.body.pdfData)
-console.log(req);
-//console.log(req.body)
+const imageData = JSON.parse(req.body.images)
+//console.log(imageData);
+console.log(imageData)
 
 try{
 const pdfData = await fs.readFile('public/LK-Fillable-3.pdf');
@@ -57,25 +58,22 @@ let attachments = [{
 
 const html = `<div> <p>user ${req.user.name} has finished his job </p> </br><h1>Notes </h1></br> <p>${req.body.textArea}</p></div>`
 
-
-
-for(const property in req.files){
+for(const property in imageData){
+  const base64EncodedImage = imageData[property]; // your base64 encoded image string
+const buffer = Buffer.from(base64EncodedImage.split(',')[1], 'base64');
   attachments.push({
-    filename: req.files[property].name,
-    content: req.files[property].data
+    filename: `${property}.jpg`,
+    content: buffer
   })
+
 }
 
-
-
-
+console.log(attachments)
 await sendEmail(attachments, html)
 
 res.sendStatus(200)
 
-//  db.query(`INSERT INTO folder (name, assigned_worker_id) VALUES (?,?)`,
-//   [folderName, req.body.idUser],
-//   (err, result, fields) => {})
+
 
 }catch (err){
 console.log(err)
@@ -132,9 +130,6 @@ sig.acroField.getWidgets().forEach((widget) => {
 const sendEmail = async (attachments,html) => {
 
   try {
-
-
-
 const transporter = nodemailer.createTransport({
   service:'gmail',
   auth: {
