@@ -8,9 +8,7 @@ const config = require("../../../config");
 async function fillPDF(req, res, next) {
 let bodyData =  JSON.parse(req.body.pdfData)
 const imageData = JSON.parse(req.body.images)
-//console.log(imageData);
-console.log(imageData)
-
+console.log(req.body);
 try{
 const pdfData = await fs.readFile('public/LK-Fillable-3.pdf');
 const pdfDoc = await PDFDocument.load(pdfData);
@@ -25,7 +23,8 @@ const fieldNames = pdfDoc.getForm().getFields().map((f)=> f.getName());
  form.getTextField('196525639').setText(bodyData.filedDate2)
  form.getTextField('196525638').setText(bodyData.filedDate3)
  form.getTextField('196525640').setText(bodyData.filedDate4)
- 
+
+
  switch (bodyData.radioValue) {
   case "radio1":
     //first radio
@@ -63,7 +62,6 @@ for(const property in imageData){
 
   const base64EncodedImage = imageData[property]; // your base64 encoded image string
 const buffer = Buffer.from(base64EncodedImage.split(',')[1], 'base64');
-//console.log(buffer)
   attachments.push({
     filename: `${property}.jpg`,
     content: buffer
